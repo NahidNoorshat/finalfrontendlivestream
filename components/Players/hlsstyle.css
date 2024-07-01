@@ -1,0 +1,20 @@
+/* Hides the time display in the video controls */
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display {
+  display: none;
+}
+
+video::-moz-media-controls-current-time-display,
+video::-moz-media-controls-time-remaining-display {
+  display: none;
+}
+
+video::-ms-media-controls-current-time-display,
+video::-ms-media-controls-time-remaining-display {
+  display: none;
+}
+
+video::-media-controls-current-time-display,
+video::-media-controls-time-remaining-display {
+  display: none;
+}
