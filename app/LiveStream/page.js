@@ -27,7 +27,7 @@ export default function Home() {
     const fetchMatches = async () => {
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/matches/filtered_matches/"
+          "https://app.123fblive.com/api/matches/filtered_matches/"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
