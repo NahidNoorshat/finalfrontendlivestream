@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { AdditionalDataContext } from "../../context/AdditionalDataProvider";
 
 import Image from "next/image";
+import Loader from "../Loader/Loader";
+// import Loader from "@/components/Loader/Loader"; // Import Loader component
 
 const MatchLive = ({
   vedioSrc,
@@ -20,19 +22,16 @@ const MatchLive = ({
   homeTeamid,
   awayTeamid,
 }) => {
-  console.log(vedioSrc, "this is steam list");
-  console.log(fixtureid, "this is checking in main page.. ");
-  const nahid = "Aunahid..";
   const router = useRouter();
   const { setAdditionalData, setMatchifo } = useContext(AdditionalDataContext);
-  console.log(vedioSrc, "befor provide data...");
   const [fixtureData, setFixtureData] = useState(null);
+  const [loading, setLoading] = useState(true); // State for loading indicator
 
   useEffect(() => {
-    // Function to fetch fixture details
     const fetchFixtureData = async () => {
-      if (fixtureid) {
-        try {
+      setLoading(true); // Start loading
+      try {
+        if (fixtureid) {
           const url = `https://api-football-v1.p.rapidapi.com/v3/fixtures?id=${fixtureid}`;
           const response = await fetch(url, {
             method: "GET",
@@ -44,14 +43,15 @@ const MatchLive = ({
           });
           if (response.ok) {
             const data = await response.json();
-            console.log(data.response[0], "game info from main page....  ");
             setFixtureData(data.response[0]); // Assuming the API returns an array and you want the first item
           } else {
             console.error("Failed to fetch fixture data:", response.status);
           }
-        } catch (error) {
-          console.error("Error fetching fixture data:", error);
         }
+      } catch (error) {
+        console.error("Error fetching fixture data:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
@@ -59,6 +59,7 @@ const MatchLive = ({
   }, [fixtureid]);
 
   const getMatchStatus = (fixtureData) => {
+    if (!fixtureData) return "";
     const { status, date } = fixtureData.fixture;
     const { home, away } = fixtureData.goals;
 
@@ -78,35 +79,41 @@ const MatchLive = ({
 
     return `${statusText}${scoreText}`;
   };
+
   const handleclick = () => {
-    console.log("|Cliked....", nahid);
-    // const encodedPrefix = encodeURIComponent("football");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("fixtureid", fixtureid);
+      localStorage.setItem("homeTeamId", homeTeamid); // Store homeTeamId
+      localStorage.setItem("awayTeamId", awayTeamid); // Store awayTeamId
+    }
     const encodedTeam1Name = encodeURIComponent(team1Name);
     const encodedTeam2Name = encodeURIComponent(team2Name);
     setAdditionalData(vedioSrc);
     setMatchifo({ fixtureid, homeTeamid, awayTeamid, team1Name, team2Name });
 
-    // const encodedVideoSrc = encodeURIComponent(vedioSrc);
     if (vedioSrc) {
-      console.log("under condition ", vedioSrc);
       const encodedVideoSrc = encodeURIComponent(vedioSrc);
       router.push(`/LiveStreaming/${encodedTeam1Name}-vs-${encodedTeam2Name}`);
     } else {
-      // Handle case where vedioSrc is undefined or empty
       router.push(`/LiveStreaming/${encodedTeam1Name}-vs-${encodedTeam2Name}`);
     }
   };
+
+  if (loading) {
+    return <Loader />; // Display loader while fetching data
+  }
+
   return (
     <>
       <div
         onClick={handleclick}
-        className=" bg-primary-color w-full flex items-center justify-between rounded-md px-2 cursor-pointer my-2 "
+        className=" bg-primary-color w-full flex items-center justify-between rounded-md px-2 cursor-pointer my-2"
       >
-        <div className=" flex items-center gap-3  p-2">
+        <div className="flex items-center gap-3 p-2">
           <Image src={Star} />
-          <div className=" flex flex-col  gap-3 ">
-            <div className=" flex items-center gap-2 ">
-              <div className=" w-[22px] h-[22px] rounded-full flex items-center   ">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-[22px] h-[22px] rounded-full flex items-center">
                 <Image
                   src={team1Image}
                   width={22}
@@ -114,10 +121,10 @@ const MatchLive = ({
                   className="object-cover"
                 />
               </div>
-              <h1 className=" text-sm">{team1Name}</h1>
+              <h1 className="text-sm">{team1Name}</h1>
             </div>
-            <div className=" flex items-center gap-2 ">
-              <div className=" w-[22px] h-[22px] rounded-full flex items-center   ">
+            <div className="flex items-center gap-2">
+              <div className="w-[22px] h-[22px] rounded-full flex items-center">
                 <Image
                   src={team2Image}
                   width={22}
@@ -125,16 +132,13 @@ const MatchLive = ({
                   className="object-cover"
                 />
               </div>
-              <h1 className=" text-sm  ">{team2Name}</h1>
+              <h1 className="text-sm">{team2Name}</h1>
             </div>
           </div>
         </div>
-        <div className=" flex gap-4 items-center  ">
-          <div className="">
-            {fixtureData && <div>{getMatchStatus(fixtureData)}</div>}
-          </div>
-          {/* <h1> Live</h1> */}
-          <div className="">
+        <div className="flex gap-4 items-center">
+          <div>{fixtureData && <div>{getMatchStatus(fixtureData)}</div>}</div>
+          <div>
             <Image src={livetv} />
           </div>
         </div>

@@ -15,12 +15,13 @@ import HotLive from "@/components/HotLive/HotLive";
 import MatchLive from "@/components/MatchLive/MatchLive";
 import MatchSchedule from "@/components/MatchSchedule/MatchSchedule";
 import { useEffect, useState } from "react";
+import Loader from "@/components/Loader/Loader";
 
 export default function Home() {
   const router = useRouter();
   const [matches, setMatches] = useState([]);
   const [matchesByLeague, setMatchesByLeague] = useState({});
-
+  const [loading, setLoading] = useState(true); // State for loading indicator
   useEffect(() => {
     const fetchMatches = async () => {
       try {
@@ -31,7 +32,6 @@ export default function Home() {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log(data, "what i got form api.. ");
         setMatches(data); // Update matches state with fetched data
 
         // Group matches by league name
@@ -47,11 +47,17 @@ export default function Home() {
         setMatchesByLeague(groupedMatches);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); // Turn off loading indicator regardless of success or failure
       }
     };
 
     fetchMatches();
   }, []);
+
+  if (loading) {
+    return <Loader />; // Render loader when data is being fetched
+  }
 
   return (
     <>
