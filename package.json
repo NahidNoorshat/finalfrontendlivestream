@@ -13,7 +13,6 @@
     "@cloudflare/next-on-pages": "^1.11.3",
     "axios": "^1.7.2",
     "dayjs": "^1.11.11",
-    "ggplot2": "^0.0.2",
     "hls.js": "^1.5.11",
     "next": "^14.2.3",
     "react": "^18.3.1",

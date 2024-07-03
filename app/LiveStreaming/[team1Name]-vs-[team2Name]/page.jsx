@@ -50,7 +50,7 @@ const LiveStreaming = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setFixtureData(data.response[0]);
+          setFixtureData(data?.response[0]);
         } else {
           console.error("Failed to fetch fixture data:", response.status);
         }
