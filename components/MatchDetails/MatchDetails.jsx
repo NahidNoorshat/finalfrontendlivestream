@@ -29,8 +29,8 @@ const StatBar = ({ homeValue, awayValue, isPercentage }) => {
 const MatchDetails = ({ fixtureData }) => {
   const data = fixtureData?.statistics;
 
-  const homeTeamStats = data[0]?.statistics;
-  const awayTeamStats = data[1]?.statistics;
+  const homeTeamStats = data?.[0]?.statistics;
+  const awayTeamStats = data?.[1]?.statistics;
 
   const statLabels = homeTeamStats?.map((stat) => stat?.type);
 
